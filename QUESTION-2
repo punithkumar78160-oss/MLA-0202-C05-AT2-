@@ -1,0 +1,23 @@
+print("N Punith Kumar-192525156")
+import random
+K = 4
+epsilon = 0.1
+reward_total = [0] * K
+count = [0] * K
+for i in range(1000):
+    if random.random() < epsilon:
+        movie = random.randint(0, K - 1)
+    else:
+        estimates = [reward_total[j] / count[j] if count[j] > 0 else 0
+                     for j in range(K)]
+        movie = estimates.index(max(estimates))
+
+    reward = random.choice([0, 1])
+
+    count[movie] += 1
+    reward_total[movie] += reward
+estimates = [reward_total[i] / count[i] for i in range(K)]
+best = estimates.index(max(estimates))
+print("Estimated Rewards:", estimates)
+print("Best Movie:", best + 1)
+print("Highest Expected Reward:", estimates[best])
