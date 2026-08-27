@@ -1,0 +1,142 @@
+print("N punith Kumar-192525156")
+import numpy as np
+import matplotlib.pyplot as plt
+rows = 4
+cols = 4
+grid = np.array([
+    [0,  0,  0,  0],
+    [0, -1,  0,  0],
+    [0,  0,  0,  0],
+    [0,  0,  0,  9]
+])
+actions = {
+    "U": (-1, 0),
+    "D": (1, 0),
+    "L": (0, -1),
+    "R": (0, 1)
+}
+policy = np.empty((rows, cols), dtype=object)
+for r in range(rows):
+    for c in range(cols):
+
+        if grid[r][c] == -1:
+            policy[r][c] = "X"
+
+        elif grid[r][c] == 9:
+            policy[r][c] = "G"
+
+        else:
+            policy[r][c] = np.random.choice(list(actions.keys()))
+V = np.zeros((rows, cols))
+gamma = 0.9
+theta = 0.001
+def get_next_state(r, c, action):
+    """Return next state after taking an action."""
+
+    dr, dc = actions[action]
+
+   nr = r + dr
+    nc = c + dc
+    if (nr < 0 or nr >= rows or
+        nc < 0 or nc >= cols or
+        grid[nr][nc] == -1):
+        return r, c
+    return nr, nc
+def get_reward(nr, nc):
+    """Energy cost and destination reward."""
+
+    if grid[nr][nc] == 9:
+        return 100
+    return -1
+stable = False
+while not stable:
+    while True:
+        delta = 0
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] == -1 or grid[r][c] == 9:
+                    continue
+                action = policy[r][c]
+                nr, nc = get_next_state(r, c, action)
+                reward = get_reward(nr, nc)
+                new_value = reward + gamma * V[nr][nc]
+                delta = max(
+                    delta,
+                    abs(new_value - V[r][c])
+                )
+                V[r][c] = new_value
+        if delta < theta:
+            break
+    stable = True
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == -1 or grid[r][c] == 9:
+                continue
+            old_action = policy[r][c]
+            best_action = old_action
+            best_value = float("-inf")
+                nr, nc = get_next_state(r, c, action)
+                reward = get_reward(nr, nc)
+                value = reward + gamma * V[nr][nc]
+                if value > best_value:
+                    best_value = value
+                    best_action = action
+            policy[r][c] = best_action
+            if old_action != best_action:
+                stable = Fals
+print("Optimal State Values")
+print("--------------------------------")
+
+for r in range(rows):
+    for c in range(cols):
+
+        if grid[r][c] == -1:
+            print("BLOCK", end="\t")
+        else:
+            print(round(V[r][c], 2), end="\t")
+
+    print()
+for r in range(rows):
+    for c in range(cols):
+        print(policy[r][c], end="\t")
+    print()
+print("\nLegend:")
+print("U = Up")
+print("D = Down")
+print("L = Left")
+print("R = Right")
+print("X = Obstacle")
+print("G = Destination")
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.imshow(V)
+for r in range(rows):
+    for c in range(cols):
+
+        if grid[r][c] == -1:
+            ax.text(
+                c, r, "X",
+                ha="center",
+                va="center",
+                fontsize=16
+            )
+        elif grid[r][c] == 9:
+            ax.text(
+                c, r, "G",
+                ha="center",
+                va="center",
+                fontsize=16
+            )
+        else:
+            ax.text(
+                c, r,
+                policy[r][c] + "\n" + str(round(V[r][c], 1)),
+                ha="center",
+                va="center",
+                fontsize=11
+            )
+ax.set_title("Policy Iteration - Autonomous Drone Navigation")
+ax.set_xticks(range(cols))
+ax.set_yticks(range(rows))
+ax.set_xlabel("Column")
+ax.set_ylabel("Row")
+plt.show()
