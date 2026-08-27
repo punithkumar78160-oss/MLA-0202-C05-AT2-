@@ -1,0 +1,14 @@
+print("N Punith kumar-192525156")
+import random
+N = 10000
+on_time = 0
+for i in range(N):
+    traffic = random.randint(1, 100)
+    delivery_time = 30 + traffic * 0.5
+
+    if delivery_time <= 60:
+        on_time += 1
+probability = on_time / N
+print("Total Trials:", N)
+print("On-Time Deliveries:", on_time)
+print("Estimated Probability:", probability)
