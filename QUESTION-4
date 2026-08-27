@@ -1,0 +1,38 @@
+print("N punith Kumar-192525156")
+import random
+import matplotlib.pyplot as plt
+num_states = 6
+episodes = 100
+alpha = 0.1
+gamma = 0.9
+V = [0.0] * num_states
+value_history = []
+for episode in range(episodes):
+    state = random.randint(0, num_states - 2)
+    while state < num_states - 1:
+        reward = random.randint(1, 10)
+        next_state = state + 1
+        td_target = reward + gamma * V[next_state]
+
+       td_error = td_target - V[state]
+
+        V[state] = V[state] + alpha * td_error
+
+        state = next_state
+    value_history.append(sum(V) / num_states)
+print("Final State-Value Estimates")
+print("--------------------------------")
+for i in range(num_states):
+    print("State", i + 1, ":", round(V[i], 2))
+plt.figure(figsize=(8, 5))
+plt.plot(
+    range(1, episodes + 1),
+    value_history,
+    marker='o',
+    markersize=3
+)
+plt.xlabel("Episode")
+plt.ylabel("Average State Value")
+plt.title("TD Learning - Game Score Prediction")
+plt.grid(True)
+plt.show()
